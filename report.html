@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fire Safe MVP - 1847 Grizzly Peak Blvd, Berkeley</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Custom color variables */
+        :root {
+            --primary-green: #1B5E20;
+            --accent-orange: #FF6B35;
+            --gold: #FFD700;
+            --dark-green: #1a3a2a;
+            --light-green: #2d5a3d;
+            --zone-0-color: #f59e0b;
+            --zone-1-color: #fbbf24;
+            --zone-2-color: #86efac;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .nav-sticky {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #1a3a2a 0%, #2d5a3d 100%);
+        }
+
+        .readiness-bar-container {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .readiness-header {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .readiness-subheader {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 24px;
+        }
+
+        .readiness-bar-wrapper {
+            position: relative;
+            background: linear-gradient(90deg, #ef4444 0%, #f97316 25%, #fbbf24 50%, #86efac 75%, #22c55e 100%);
+            height: 16px;
+            border-radius: 8px;
+            margin-bottom: 32px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .readiness-marker {
+            position: absolute;
+            top: 50%;
+            width: 28px;
+            height: 28px;
+            background: white;
+            border: 3px solid #e5e7eb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: #374151;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            transform: translate(-50%, -50%);
+            z-index: 2;
+        }
+
+        .readiness-marker.current {
+            border-color: #ef4444;
+            color: #ef4444;
+            font-weight: 700;
+        }
+
+        .readiness-marker.phase1 {
+            border-color: #f97316;
+            color: #f97316;
+        }
+
+        .readiness-marker.phase2 {
+            border-color: #fbbf24;
+            color: #fbbf24;
+        }
+
+        .readiness-marker.phase3 {
+            border-color: #22c55e;
+            color: #22c55e;
+        }
+
+        .readiness-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .readiness-label-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .insurer-indicator {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            margin-bottom: 32px;
+        }
+
+        .insurer-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .insurer-spectrum {
+            position: relative;
+            background: linear-gradient(90deg, #ef4444 0%, #f97316 33%, #fbbf24 66%, #86efac 100%);
+            height: 12px;
+            border-radius: 6px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .insurer-arrow {
+            position: absolute;
+            top: 50%;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border: 3px solid #ef4444;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            transform: translate(-50%, -50%);
+            z-index: 2;
+        }
+
+        .insurer-arrow.current::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .insurer-arrow.phase1 {
+            border-color: #f97316;
+            opacity: 0.7;
+        }
+
+        .insurer-arrow.phase2 {
+            border-color: #fbbf24;
+            opacity: 0.7;
+        }
+
+        .insurer-arrow.phase3 {
+            border-color: #22c55e;
+            opacity: 0.7;
+        }
+
+        .insurer-spectrum-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #374151;
+        }
+
+        .insurer-criteria {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #374151;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .insurer-criteria-text {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 8px;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        .zone-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            border-radius: 12px;
+            padding: 40px;
+            min-height: 500px;
+            margin-bottom: 24px;
+        }
+
+        .zone-zone-0 {
+            fill: var(--zone-0-color);
+            opacity: 0.8;
+        }
+
+        .zone-zone-1 {
+            fill: var(--zone-1-color);
+            opacity: 0.7;
+        }
+
+        .zone-zone-2 {
+            fill: var(--zone-2-color);
+            opacity: 0.6;
+        }
+
+        .accordion-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .accordion-item:hover {
+            border-color: #d1d5db;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .accordion-header {
+            background: #f9fafb;
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background: #f3f4f6;
+        }
+
+        .accordion-header-title {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 16px;
+            flex: 1;
+        }
+
+        .accordion-header-progress {
+            font-size: 13px;
+            color: #6b7280;
+            margin-left: 16px;
+            font-weight: 500;
+        }
+
+        .accordion-chevron {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+            margin-left: 16px;
+        }
+
+        .accordion-item.open .accordion-chevron {
+            transform: rotate(90deg);
+        }
+
+        .accordion-content {
+            display: none;
+            padding: 24px;
+            border-top: 1px solid #e5e7eb;
+            background: white;
+            animation: slideDown 0.3s ease;
+        }
+
+        .accordion-item.open .accordion-content {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .action-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .action-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-color: #d1d5db;
+        }
+
+        .action-card-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .action-card-status-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: #22c55e;
+            color: white;
+            border-radius: 50%;
+            font-weight: 600;
+            font-size: 14px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .action-card-status-icon.pending {
+            background: #e5e7eb;
+            color: #9ca3af;
+        }
+
+        .action-card-title {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 15px;
+            flex: 1;
+        }
+
+        .action-card-description {
+            color: #6b7280;
+            font-size: 14px;
+            margin-left: 36px;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .action-card-regulation {
+            color: #9ca3af;
+            font-size: 12px;
+            margin-left: 36px;
+            margin-bottom: 8px;
+        }
+
+        .progress-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 12px 16px;
+            background: #f9fafb;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-green), var(--accent-orange));
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-weight: 600;
+            color: #1f2937;
+            min-width: 80px;
+        }
+
+        .phase-tab {
+            padding: 12px 24px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-right: 12px;
+            margin-bottom: 12px;
+        }
+
+        .phase-tab.active {
+            background: #22c55e;
+            color: white;
+            border-color: #22c55e;
+        }
+
+        .phase-tab:hover {
+            border-color: #22c55e;
+        }
+
+        .phase-content {
+            display: none;
+        }
+
+        .phase-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .before-after-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .before-after-box {
+            background: #d1d5db;
+            border-radius: 8px;
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .before-after-box.before {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        }
+
+        .before-after-box.after {
+            background: linear-gradient(135deg, #86efac 0%, #22c55e 100%);
+        }
+
+        .what-changes-list {
+            background: #f9fafb;
+            border-left: 4px solid #22c55e;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .what-changes-list li {
+            margin-bottom: 10px;
+            color: #374151;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .what-changes-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .cta-button {
+            width: 100%;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+        }
+
+        .cta-subtext {
+            text-align: center;
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 24px;
+        }
+
+        .palette-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            margin-bottom: 16px;
+        }
+
+        .palette-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .palette-card-header {
+            padding: 16px;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .palette-card-body {
+            padding: 16px;
+        }
+
+        .palette-card-body li {
+            font-size: 13px;
+            color: #374151;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .palette-card-body li:last-child {
+            margin-bottom: 0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 50;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 900px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+            animation: slideUp 0.3s ease;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #9ca3af;
+            z-index: 51;
+            background: none;
+            border: none;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: #6b7280;
+        }
+
+        .modal-left {
+            padding: 40px;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            border-right: 1px solid #e5e7eb;
+        }
+
+        .modal-right {
+            padding: 40px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 24px;
+        }
+
+        .modal-phase-label {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-phase-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+
+        .modal-phase-cost {
+            font-size: 28px;
+            font-weight: 800;
+            color: #22c55e;
+            margin-bottom: 24px;
+        }
+
+        .modal-section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-top: 24px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-checklist {
+            list-style: none;
+            margin-bottom: 24px;
+        }
+
+        .modal-checklist li {
+            font-size: 14px;
+            color: #374151;
+            margin-bottom: 10px;
+            padding-left: 24px;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .modal-checklist li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #22c55e;
+            font-weight: 700;
+        }
+
+        .modal-timeline {
+            font-size: 14px;
+            color: #374151;
+            margin-bottom: 24px;
+            padding: 12px;
+            background: white;
+            border-radius: 6px;
+        }
+
+        .modal-callout {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid #22c55e;
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .modal-form-group {
+            margin-bottom: 16px;
+        }
+
+        .modal-label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .modal-input,
+        .modal-textarea,
+        .modal-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.3s ease;
+        }
+
+        .modal-input:focus,
+        .modal-textarea:focus,
+        .modal-select:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(27, 94, 32, 0.1);
+        }
+
+        .modal-button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            font-weight: 700;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            margin-top: 8px;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+
+        .modal-button:hover {
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .modal-contractors {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .modal-contractors-text {
+            margin-bottom: 12px;
+        }
+
+        .modal-contractors-list {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .modal-contractor-badge {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+            font-size: 12px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .regulation-item {
+            background: white;
+            padding: 20px;
+            border-left: 4px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .regulation-title {
+            font-weight: 700;
+            color: #1f2937;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+
+        .regulation-text {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .regulation-deadline {
+            color: #059669;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .section-heading {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 8px;
+            margin-top: 40px;
+        }
+
+        .section-intro {
+            font-size: 16px;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 32px;
+            max-width: 600px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-20 {
+            margin-bottom: 80px;
+        }
+
+        .cost-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .cost-table th {
+            background: #f3f4f6;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #1f2937;
+            border-bottom: 2px solid #e5e7eb;
+            font-size: 13px;
+        }
+
+        .cost-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .cost-table tr:hover {
+            background: #f9fafb;
+        }
+
+        @media (max-width: 768px) {
+            .before-after-container {
+                grid-template-columns: 1fr;
+            }
+
+            .section-heading {
+                font-size: 1.75rem;
+            }
+
+            .accordion-header {
+                padding: 16px;
+            }
+
+            .accordion-content {
+                padding: 16px;
+            }
+
+            .readiness-bar-container,
+            .insurer-indicator {
+                padding: 24px;
+            }
+
+            .modal-left {
+                padding: 30px;
+                border-right: none;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .modal-right {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-white" style="font-family: 'Inter', sans-serif;">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 bg-white z-40 nav-sticky">
+        <div class="max-w-5xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="font-bold text-lg text-gray-900">Fire Safety Assessment</div>
+                <div class="flex items-center gap-4">
+                    <a href="#design-studio" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">Assessment</a>
+                    <a href="#design-studio" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">Design Studio</a>
+                    <a href="#costs" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">Costs</a>
+                    <a href="#insurance" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">Insurance</a>
+                    <a href="#regulations" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">Regulations</a>
+                    <button onclick="document.getElementById('design-studio').scrollIntoView({behavior: 'smooth'})" class="px-6 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white font-600 rounded-lg hover:shadow-lg transition-all text-sm">
+                        Get Started
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-gradient text-white py-20 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+                <div>
+                    <h1 class="text-5xl font-bold mb-4">Your Personalized Fire Safety Plan</h1>
+                    <p class="text-xl mb-6 opacity-90">
+                        This report identifies what your home needs and maps out a clear path to get there — at your pace and budget.
+                    </p>
+                    <div class="mb-6">
+                        <p class="text-lg font-semibold mb-2">1847 Grizzly Peak Blvd, Berkeley</p>
+                        <div class="flex items-center gap-2 text-sm opacity-85">
+                            <span class="inline-block">Berkeley EMBER Program</span>
+                            <span class="inline-block">•</span>
+                            <span class="inline-block">Grizzly Peak Mitigation Area</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fire Readiness Score in Hero -->
+            <div class="mt-12">
+                <div class="flex items-center justify-between mb-3">
+                    <div>
+                        <span class="text-2xl font-bold">Fire Readiness Score</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-3xl font-bold">2.5</span>
+                        <span class="text-lg opacity-70"> / 10</span>
+                    </div>
+                </div>
+                <!-- Simplified progress bar -->
+                <div style="position: relative; height: 12px; border-radius: 6px; background: rgba(255,255,255,0.15); overflow: hidden;">
+                    <!-- Gradient track -->
+                    <div style="position: absolute; inset: 0; border-radius: 6px; background: linear-gradient(90deg, #ef4444 0%, #f97316 25%, #fbbf24 50%, #86efac 75%, #22c55e 100%); opacity: 0.4;"></div>
+                    <!-- Filled portion up to 2.5/10 = 25% -->
+                    <div style="position: absolute; top: 0; left: 0; bottom: 0; width: 25%; border-radius: 6px; background: linear-gradient(90deg, #ef4444, #f97316);"></div>
+                </div>
+                <div class="flex items-center justify-between mt-2">
+                    <p class="text-sm opacity-70">Here's your starting point</p>
+                    <p class="text-sm opacity-70">Goal: 9+</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="max-w-5xl mx-auto px-6 py-20">
+
+        <!-- FIRE READINESS SCORE BAR -->
+        <section class="readiness-bar-container">
+            <div class="readiness-header">Fire Readiness Progress</div>
+            <div class="readiness-subheader">Track your journey from today (2.5) to fully ready (9.2+)</div>
+
+            <div class="readiness-bar-wrapper">
+                <div class="readiness-marker current" style="left: 25%;"><span>●</span></div>
+                <div class="readiness-marker phase1" style="left: 55%;"><span>1</span></div>
+                <div class="readiness-marker phase2" style="left: 75%;"><span>2</span></div>
+                <div class="readiness-marker phase3" style="left: 92%;"><span>3</span></div>
+            </div>
+
+            <div style="position: relative; height: 48px; margin-top: 8px;">
+                <div style="position: absolute; left: 25%; transform: translateX(-50%); text-align: center;">
+                    <div style="font-size: 12px; font-weight: 700; color: #ef4444;">Current</div>
+                    <div style="font-size: 14px; color: #374151; margin-top: 2px;">2.5</div>
+                </div>
+                <div style="position: absolute; left: 55%; transform: translateX(-50%); text-align: center;">
+                    <div style="font-size: 12px; font-weight: 600; color: #374151;">Phase 1</div>
+                    <div style="font-size: 14px; color: #374151; margin-top: 2px;">5.5</div>
+                </div>
+                <div style="position: absolute; left: 75%; transform: translateX(-50%); text-align: center;">
+                    <div style="font-size: 12px; font-weight: 600; color: #374151;">Phase 2</div>
+                    <div style="font-size: 14px; color: #374151; margin-top: 2px;">7.5</div>
+                </div>
+                <div style="position: absolute; left: 92%; transform: translateX(-50%); text-align: center;">
+                    <div style="font-size: 12px; font-weight: 600; color: #374151;">Phase 3</div>
+                    <div style="font-size: 14px; color: #374151; margin-top: 2px;">9.2</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- INSURER READINESS INDICATOR -->
+        <section class="insurer-indicator">
+            <div class="insurer-title">Insurer Readiness</div>
+
+            <div class="insurer-spectrum-labels">
+                <span>Needs Work</span>
+                <span>Getting There</span>
+                <span>Strong Position</span>
+            </div>
+
+            <div class="insurer-spectrum">
+                <div class="insurer-arrow current" style="left: 12%;" title="Current — 2 of 6 criteria"></div>
+                <div class="insurer-arrow phase1" style="left: 42%;" title="After Phase 1 — 4 of 6 criteria"></div>
+                <div class="insurer-arrow phase2" style="left: 68%;" title="After Phase 2 — 5 of 6 criteria"></div>
+                <div class="insurer-arrow phase3" style="left: 90%;" title="After Phase 3 — 6 of 6 criteria"></div>
+            </div>
+
+            <div class="insurer-criteria">
+                <div style="margin-bottom: 8px;"><strong>2 of 6 insurer criteria addressed</strong> — Let's expand that.</div>
+                <div class="insurer-criteria-text">Based on commonly evaluated insurer criteria. Insurance decisions depend on many factors — this shows how your plan aligns with what insurers typically look for.</div>
+            </div>
+
+            <div style="font-size: 13px; color: #6b7280; margin-top: 12px;">
+                <strong>After Phase 3: 6 of 6 criteria addressed</strong> — Full alignment with insurer expectations.
+            </div>
+        </section>
+
+        <!-- WHAT YOUR HOME NEEDS SECTION -->
+        <section class="mb-20">
+            <h2 class="section-heading">What Your Home Needs</h2>
+            <p class="section-intro">
+                We've assessed your property and mapped out exactly what needs to happen. Here's your action plan, organized by priority.
+            </p>
+
+            <!-- Zone Diagram -->
+            <div class="zone-diagram">
+                <svg viewBox="0 0 400 400" style="width: 100%; max-width: 400px; height: auto;">
+                    <rect x="150" y="140" width="100" height="100" fill="none" stroke="#374151" stroke-width="2"/>
+                    <circle cx="200" cy="190" r="50" class="zone-zone-0" stroke="#1f2937" stroke-width="1"/>
+                    <circle cx="200" cy="190" r="110" class="zone-zone-1" stroke="#1f2937" stroke-width="1"/>
+                    <circle cx="200" cy="190" r="180" class="zone-zone-2" stroke="#1f2937" stroke-width="1"/>
+                    <text x="200" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2937">Zone 2 (100+ feet)</text>
+                    <text x="200" y="115" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2937">Zone 1 (30 feet)</text>
+                    <text x="200" y="175" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2937">Zone 0 (5 feet)</text>
+                    <text x="200" y="200" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2937">Home</text>
+                </svg>
+            </div>
+
+            <!-- Start Here (Zone 0) Accordion -->
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <div style="flex: 1;">
+                        <div class="accordion-header-title">Start Here — Highest Impact (Zone 0)</div>
+                        <p class="text-sm text-gray-500 mt-1">The 5-foot zone immediately around your home.</p>
+                    </div>
+                    <div class="accordion-header-progress">2 of 8 complete</div>
+                    <div class="accordion-chevron">▸</div>
+                </div>
+                <div class="accordion-content">
+                    <div class="action-card">
+                        <div class="action-card-header">
+                            <div class="action-card-status-icon">✓</div>
+                            <div class="action-card-title">Clear Leaves, Needles & Debris</div>
+                        </div>
+                        <div class="action-card-description">Remove dead leaves, pine needles, and loose debris from roof, gutters, and the ground around your home. This prevents embers from igniting.</div>
+                        <div class="action-card-regulation">Defensible Space (Zone 0)</div>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-card-header">
+                            <div class="action-card-status-icon pending">○</div>
+                            <div class="action-card-title">Trim Tree Canopies</div>
+                        </div>
+                        <div class="action-card-description">Remove branches hanging over or touching your roof. Trim lower limbs up to 6-10 feet. Space trees 10+ feet apart (crown to crown).</div>
+                        <div class="action-card-regulation">Home Hardening (Clearance)</div>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-card-header">
+                            <div class="action-card-status-icon pending">○</div>
+                            <div class="action-card-title">Install / Upgrade Screens</div>
+                        </div>
+                        <div class="action-card-description">1/8-inch metal mesh screens on all vents (attic, foundation, dryer). Embers can enter through unscreened openings.</div>
+                        <div class="action-card-regulation">Home Hardening (Vents)</div>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-card-header">
+                            <div class="action-card-status-icon">✓</div>
+                            <div class="action-card-title">Check Roof Condition</div>
+                        </div>
+                        <div class="action-card-description">Inspect for missing or damaged shingles. Class A fire-rated roofing is preferred. If replacement is needed, plan for Phase 2.</div>
+                        <div class="action-card-regulation">Home Hardening (Roof)</div>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-card-header">
+                            <div class="action-card-status-icon pending">○</div>
+                            <div class="action-card-title">Clear Space Below Eaves</div>
+                        </div>
+                        <div class="action-card-description">Remove leaves, needles, and vegetation from under eaves and soffits. Keep gutters clear and install gutter guards if needed.</div>
+                        <div class="action-card-regulation">Defensible Space (Zone 0)</div>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-card-header">
+                            <div class="action-card-status-icon pending">○</div>
+                            <div class="action-card-title">Seal Gaps & Cracks</div>
+                        </div>
+                        <div class="action-card-description">Seal openings around pipes, vents, chimney, and siding where embers can enter. Use fire-rated caulk or metal trim.</div>
+                        <div class="action-card-regulation">Home Hardening (Sealing)</div>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-card-header">
+                            <div class="action-card-status-icon pending">○</div>
+                            <div class="action-card-title">Inspect Deck & Railings</div>
+                        </div>
+                        <div class="action-card-description">Check deck boards, railings, and stairs for damage or dead vegetation. Ensure no leaves accumulate under the deck.</div>
+                        <div class="action-card-regulation">Home Hardening (Structure)</div>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-card-header">
+                            <div class="action-card-status-icon pending">○</div>
+                            <div class="action-card-title">Grade & Drainage</div>
+                        </div>
+                        <div class="action-card-description">Ensure ground slopes away from foundation. Remove any dead vegetation or debris piles near the base of your home.</div>
+                        <div class="action-card-regulation">Defensible Space (Foundation)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Next Steps (Zone 1) Accordion -->
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <div style="flex: 1;">
+                        <div class="accordion-header-title">Next Steps (Zone 1)</div>
+                        <p class="text-sm text-gray-500 mt-1">The 30-foot zone surrounding your home.</p>
+                    </div>
+                    <div class="accordion-header-progress">1 of 5 complete</div>
+                    <div class="accordion-chevron">▸</div>
+                </div>
+                <div class="accordion-content">
+                    <div class="action-card">
+                        <div class="action-card-header">
+                            <div class="action-card-status-icon pending">○</div>
+                            <div class="action-card-title">Remove Dead & Dying Trees</div>
+                        </div>
+                        <div class="action-card-description">Trees with no green foliage or significant bark damage should be removed. These are highest fire risk and pose falling hazards.</div>
+                        <div class="action-card-regulation">Vegetation Management (Zone 1)</div>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-card-header">
+                            <div class="action-card-status-icon pending">○</div>
+                            <div class="action-card-title">Thin Tree Density</div>
+                        </div>
+                        <div class="action-card-description">Maintain spacing of 10-12 feet between tree crowns. Remove smaller trees and understory vegetation. This slows fire spread and reduces ladder fuels.</div>
+                        <div class="action-card-regulation">Vegetation Management (Zone 1)</div>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-card-header">
+                            <div class="action-card-status-icon">✓</div>
+                            <div class="action-card-title">Prune Lower Branches</div>
+                        </div>
+                        <div class="action-card-description">Remove branches 6-10 feet up on all trees. This prevents fire from climbing from shrubs into tree canopies.</div>
+                        <div class="action-card-regulation">Vegetation Management (Zone 1)</div>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-card-header">
+                            <div class="action-card-status-icon pending">○</div>
+                            <div class="action-card-title">Remove Shrubs Near House</div>
+                        </div>
+                        <div class="action-card-description">Remove or significantly prune shrubs within 5 feet of walls, deck, or steps. Keep all vegetation at least 10 feet from air conditioning units and vents.</div>
+                        <div class="action-card-regulation">Access & Clearance</div>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-card-header">
+                            <div class="action-card-status-icon pending">○</div>
+                            <div class="action-card-title">Manage Ground Cover</div>
+                        </div>
+                        <div class="action-card-description">Remove pine needles, leaves, and dead vegetation from ground. Maintain 10-foot radius of bare ground or low herbaceous plants around property.</div>
+                        <div class="action-card-regulation">Vegetation Management (Zone 1)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- When You're Ready (Zone 2) Accordion -->
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <div style="flex: 1;">
+                        <div class="accordion-header-title">When You're Ready (Zone 2)</div>
+                        <p class="text-sm text-gray-500 mt-1">100+ feet out — expanded defensible space.</p>
+                    </div>
+                    <div class="accordion-header-progress">3 of 4 complete</div>
+                    <div class="accordion-chevron">▸</div>
+                </div>
+                <div class="accordion-content">
+                    <div class="action-card">
+                        <div class="action-card-header">
+                            <div class="action-card-status-icon">✓</div>
+                            <div class="action-card-title">Thin Overstocked Trees</div>
+                        </div>
+                        <div class="action-card-description">Remove weak, diseased, or crowded trees. Target 10-12 feet spacing. This reduces overall fuel load and improves forest health.</div>
+                        <div class="action-card-regulation">Extended Fuel Reduction (Zone 2)</div>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-card-header">
+                            <div class="action-card-status-icon">✓</div>
+                            <div class="action-card-title">Remove Chip & Debris</div>
+                        </div>
+                        <div class="action-card-description">Haul off or chip all vegetation waste. Do not leave piled brush or logs that create fuel for fire.</div>
+                        <div class="action-card-regulation">Extended Fuel Reduction (Zone 2)</div>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-card-header">
+                            <div class="action-card-status-icon pending">○</div>
+                            <div class="action-card-title">Improve Access Roads</div>
+                        </div>
+                        <div class="action-card-description">Clear 20-foot wide access routes for emergency vehicles. Maintain minimum 14-foot clearance above road surface.</div>
+                        <div class="action-card-regulation">Access & Clearance (Zone 2)</div>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-card-header">
+                            <div class="action-card-status-icon">✓</div>
+                            <div class="action-card-title">Community Coordination</div>
+                        </div>
+                        <div class="action-card-description">Work with neighbors on shared defensible space. Community-level mitigation is more effective and eligible for some grant programs.</div>
+                        <div class="action-card-regulation">Third-Party Certification</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DESIGN STUDIO SECTION -->
+        <section id="design-studio" class="mb-20">
+            <h2 class="section-heading">Design Studio</h2>
+            <p class="section-intro">Explore detailed plans for each phase. Every phase is designed to maximize impact while fitting your timeline and budget.</p>
+
+            <!-- Phase Tabs -->
+            <div style="margin-bottom: 32px; display: flex; flex-wrap: wrap;">
+                <button class="phase-tab active" onclick="switchPhase('phase1')">Phase 1: Defensible Space</button>
+                <button class="phase-tab" onclick="switchPhase('phase2')">Phase 2: Home Hardening</button>
+                <button class="phase-tab" onclick="switchPhase('phase3')">Phase 3: Extended Mitigation</button>
+            </div>
+
+            <!-- PHASE 1 -->
+            <div id="phase1" class="phase-content active">
+                <div class="before-after-container">
+                    <div class="before-after-box before"><span>Before Phase 1</span></div>
+                    <div class="before-after-box after"><span>After Phase 1</span></div>
+                </div>
+
+                <div class="what-changes-list">
+                    <ul>
+                        <li><strong>Zone 0 cleared:</strong> All dead vegetation, leaves, and debris removed from roof, gutters, and ground within 5 feet of the house.</li>
+                        <li><strong>Trees trimmed:</strong> Branches overhanging roof removed. Lower limbs trimmed 6-10 feet up. Trees spaced properly for canopy separation.</li>
+                        <li><strong>Vents screened:</strong> All attic, foundation, and dryer vents fitted with 1/8-inch metal mesh screens to stop ember entry.</li>
+                        <li><strong>Roof inspected:</strong> Damaged shingles noted and documented. Plan for Phase 2 roof replacement if needed.</li>
+                        <li><strong>Eaves cleared:</strong> Space under eaves cleaned and gutter guards installed to prevent debris accumulation.</li>
+                        <li><strong>Gaps sealed:</strong> Fire-rated caulk applied to openings around pipes, vents, and chimney penetrations.</li>
+                        <li><strong>Defensible space established:</strong> Your home is now substantially hardened against ember attack in Zone 0.</li>
+                    </ul>
+                </div>
+
+                <div style="margin-bottom: 32px; padding: 20px; background: #f9fafb; border-radius: 8px;">
+                    <h3 style="font-weight: 700; color: #1f2937; margin-bottom: 12px;">Recommended Plant Palette for Phase 1</h3>
+                    <p style="font-size: 14px; color: #6b7280; margin-bottom: 16px;">Choose fire-resistant trees and shrubs that support long-term defensible space:</p>
+
+                    <div class="palette-card">
+                        <div class="palette-card-header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">Trees (10-12ft spacing)</div>
+                        <div class="palette-card-body">
+                            <ul>
+                                <li>Coast Live Oak (Quercus agrifolia)</li>
+                                <li>California Bay Laurel (Umbellularia californica) — keep pruned</li>
+                                <li>Madrone (Arbutus menziesii)</li>
+                                <li>Toyon (Heteromeles arbutifolia)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="palette-card">
+                        <div class="palette-card-header" style="background: linear-gradient(135deg, #84cc16 0%, #65a30d 100%);">Shrubs (low, spaced)</div>
+                        <div class="palette-card-body">
+                            <ul>
+                                <li>California Buckwheat (Eriogonum fasciculatum)</li>
+                                <li>Desert Marigold (Baileya multiradiata)</li>
+                                <li>Coyote Brush (Baccharis pilularis) — keep under 3 feet</li>
+                                <li>Silver Wattle (Acacia dealbata) — minimal use</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="palette-card">
+                        <div class="palette-card-header" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">Ground Cover (low water, minimal fuel)</div>
+                        <div class="palette-card-body">
+                            <ul>
+                                <li>Woolly Yarrow (Achillea tomentosa)</li>
+                                <li>Silver Carpet (Dymondia margaretae)</li>
+                                <li>Prostrate Rosemary (Rosmarinus officinalis prostratus)</li>
+                                <li>Decomposed Granite or Rock (zero fuel load)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="cta-button" onclick="openPhaseModal('Phase 1', '$2,900', ['Clear roof gutters and remove all dead leaves/needles', 'Trim tree canopies and remove overhanging branches', 'Install 1/8-inch metal mesh on all vents', 'Seal gaps around pipes and vents with fire-rated caulk', 'Clear eaves and install gutter guards', 'Initial vegetation removal in Zone 0'], '2-3 weeks')">Start Phase 1 — $2,900</button>
+                <div class="cta-subtext">Get matched with local contractors</div>
+            </div>
+
+            <!-- PHASE 2 -->
+            <div id="phase2" class="phase-content">
+                <div class="before-after-container">
+                    <div class="before-after-box before"><span>Before Phase 2</span></div>
+                    <div class="before-after-box after"><span>After Phase 2</span></div>
+                </div>
+
+                <div class="what-changes-list">
+                    <ul>
+                        <li><strong>Roof replacement:</strong> Install Class A fire-rated roofing (metal or fire-rated shingles) across entire structure.</li>
+                        <li><strong>Exterior walls:</strong> Inspect and upgrade any vulnerable siding. Consider fire-resistant materials where needed.</li>
+                        <li><strong>Windows upgraded:</strong> Install tempered or dual-pane windows where applicable. Ensure all are properly sealed.</li>
+                        <li><strong>Zone 1 vegetation:</strong> Remove dead/dying trees. Thin forest canopy. Prune lower limbs on remaining trees. Establish 10-foot spacing.</li>
+                        <li><strong>Debris removal:</strong> All wood chips and brush from Phase 1-2 work are hauled away or chipped.</li>
+                        <li><strong>Access roads:</strong> Ensure driveway clearances are adequate (20-foot width where possible).</li>
+                        <li><strong>Fire readiness jumps to 7.5/10.</strong> Your home is now hardened against both ember and direct flame exposure.</li>
+                    </ul>
+                </div>
+
+                <div style="margin-bottom: 32px; padding: 20px; background: #f9fafb; border-radius: 8px;">
+                    <h3 style="font-weight: 700; color: #1f2937; margin-bottom: 12px;">Materials for Phase 2 Installation</h3>
+                    <p style="font-size: 14px; color: #6b7280; margin-bottom: 16px;">Premium fire-resistant materials recommended by insurers:</p>
+
+                    <div class="palette-card">
+                        <div class="palette-card-header" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">Roof Materials</div>
+                        <div class="palette-card-body">
+                            <ul>
+                                <li>Class A Metal Roofing (standing seam or metal shingles)</li>
+                                <li>Class A Architectural Shingles (CertainTeed, GAF Timberline)</li>
+                                <li>Concrete or Clay Tile (Class A rated)</li>
+                                <li>Note: Wood shingles do NOT meet Class A standard</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="palette-card">
+                        <div class="palette-card-header" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);">Exterior Siding</div>
+                        <div class="palette-card-body">
+                            <ul>
+                                <li>Fiber Cement Board (James Hardie, Cemplank)</li>
+                                <li>Stucco or Masonry (low fuel)</li>
+                                <li>Metal Siding (aluminum with fire-rated backing)</li>
+                                <li>Avoid: untreated wood, vinyl, and cedar shake</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="palette-card">
+                        <div class="palette-card-header" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);">Windows & Vents</div>
+                        <div class="palette-card-body">
+                            <ul>
+                                <li>Dual-pane or Tempered Windows (minimizes ember penetration)</li>
+                                <li>1/8-inch metal mesh on all openings</li>
+                                <li>Fire-rated caulk for all penetrations</li>
+                                <li>Attic louvers: 1/8-inch mesh screens, not solid closures</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="cta-button" onclick="openPhaseModal('Phase 2', '$7,500', ['Roof replacement with Class A fire-rated materials', 'Inspection and upgrade of exterior siding where needed', 'Window sealing and tempered glass installation', 'Zone 1 vegetation management (remove dead trees, thin canopy)', 'Debris removal and chipping of all wood waste', 'Driveway access clearance (minimum 20 feet)', 'Contractor site review and final Phase 1 touchups'], '4-6 weeks')">Start Phase 2 — $7,500</button>
+                <div class="cta-subtext">Get matched with local contractors</div>
+            </div>
+
+            <!-- PHASE 3 -->
+            <div id="phase3" class="phase-content">
+                <div class="before-after-container">
+                    <div class="before-after-box before"><span>Before Phase 3</span></div>
+                    <div class="before-after-box after"><span>After Phase 3</span></div>
+                </div>
+
+                <div class="what-changes-list">
+                    <ul>
+                        <li><strong>Extended Zone 2 mitigation:</strong> Thinning forest, removing weak/diseased trees across entire 100+ foot perimeter.</li>
+                        <li><strong>Fuel reduction:</strong> All chips and debris hauled away. Property maintained on long-term cycle.</li>
+                        <li><strong>Community alignment:</strong> Coordinate with neighbors for shared defensible space effectiveness. Potentially eligible for grant programs.</li>
+                        <li><strong>Third-party certification:</strong> Property certified as meeting community wildfire-resilience standards (e.g., Ready for Wildfire).</li>
+                        <li><strong>Ongoing maintenance plan:</strong> Seasonal pruning and debris removal schedule established to keep property resilient.</li>
+                        <li><strong>Insurance alignment:</strong> Property now meets or exceeds most insurer hardening criteria. Potential for premium reductions.</li>
+                        <li><strong>Fire readiness reaches 9.2/10.</strong> Comprehensive protection across all zones with sustainable long-term plan.</li>
+                    </ul>
+                </div>
+
+                <div style="margin-bottom: 32px; padding: 20px; background: #f9fafb; border-radius: 8px;">
+                    <h3 style="font-weight: 700; color: #1f2937; margin-bottom: 12px;">Phase 3: Long-Term Maintenance & Certification</h3>
+                    <p style="font-size: 14px; color: #6b7280; margin-bottom: 16px;">Strategies to maintain and verify your defensible space:</p>
+
+                    <div class="palette-card">
+                        <div class="palette-card-header" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">Certification Programs</div>
+                        <div class="palette-card-body">
+                            <ul>
+                                <li>Ready for Wildfire (Firewise USA certified properties)</li>
+                                <li>CAL FIRE Defensible Space Program verification</li>
+                                <li>Local insurance company certifications</li>
+                                <li>Community Wildfire Prevention & Mitigation Program (CWPM)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="palette-card">
+                        <div class="palette-card-header" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">Annual Maintenance Schedule</div>
+                        <div class="palette-card-body">
+                            <ul>
+                                <li><strong>Spring:</strong> Clear gutters, inspect roof, prune low limbs</li>
+                                <li><strong>Summer:</strong> Remove dead branches, maintain spacing, monitor new growth</li>
+                                <li><strong>Fall:</strong> Remove leaves and needles (critical before fire season)</li>
+                                <li><strong>Year-round:</strong> Remove any fallen branches or dead wood</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="palette-card">
+                        <div class="palette-card-header" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);">Community Programs & Grants</div>
+                        <div class="palette-card-body">
+                            <ul>
+                                <li>Berkeley EMBER Community Rebate Program (property tax assessments)</li>
+                                <li>CAL FIRE Vegetation Management Grants</li>
+                                <li>Bay Area wildfire mitigation cost-share programs</li>
+                                <li>Neighborhood/HOA group coordination incentives</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="cta-button" onclick="openPhaseModal('Phase 3', '$14,200', ['Extended Zone 2 thinning and fuel reduction (100+ foot perimeter)', 'Remove dead/diseased trees and create proper canopy spacing', 'Full debris removal and chipping (no piles or burn piles)', 'Community coordination with neighbors on shared defensible space', 'Third-party certification audit (Ready for Wildfire or equivalent)', 'Long-term maintenance plan and contractor recommendations', 'Insurance review and potential premium reduction discussion'], '6-10 weeks')">Start Phase 3 — $14,200</button>
+                <div class="cta-subtext">Get matched with local contractors</div>
+            </div>
+        </section>
+
+        <!-- COSTS & INVESTMENTS SECTION -->
+        <section id="costs" class="mb-20">
+            <h2 class="section-heading">Costs & Investments</h2>
+            <p class="section-intro">Transparent pricing for each phase. Pay as you go, or combine phases for potential savings.</p>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <div class="accordion-header-title">Investment Breakdown</div>
+                    <div class="accordion-chevron">▸</div>
+                </div>
+                <div class="accordion-content">
+                    <table class="cost-table">
+                        <thead>
+                            <tr>
+                                <th>Phase</th>
+                                <th>Focus</th>
+                                <th>Cost</th>
+                                <th>Timeline</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Phase 1</strong></td>
+                                <td>Zone 0 clearing & vent screening</td>
+                                <td>$2,900</td>
+                                <td>2-3 weeks</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Phase 2</strong></td>
+                                <td>Roof upgrade & Zone 1 mitigation</td>
+                                <td>$7,500</td>
+                                <td>4-6 weeks</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Phase 3</strong></td>
+                                <td>Extended mitigation & certification</td>
+                                <td>$14,200</td>
+                                <td>6-10 weeks</td>
+                            </tr>
+                            <tr style="background: #f0fdf4; font-weight: 700;">
+                                <td colspan="2">Total All Phases</td>
+                                <td>$24,600</td>
+                                <td>12-19 weeks</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="margin-top: 24px; padding: 20px; background: #f0fdf4; border-radius: 8px; border-left: 4px solid #22c55e;">
+                        <h4 style="font-weight: 700; color: #065f46; margin-bottom: 8px;">Ways to Save</h4>
+                        <ul style="color: #047857; font-size: 14px; margin-left: 20px;">
+                            <li style="margin-bottom: 8px;"><strong>Group discounts:</strong> Neighborhood coordination can unlock 10-15% savings per phase</li>
+                            <li style="margin-bottom: 8px;"><strong>Grant programs:</strong> Berkeley EMBER and CAL FIRE programs may cover 30-50% of eligible work</li>
+                            <li style="margin-bottom: 8px;"><strong>Phase combinations:</strong> Bundling phases can reduce contractor mobilization costs by 5-10%</li>
+                            <li><strong>Insurance premium reductions:</strong> After Phase 2-3, expect 5-20% annual savings on home insurance</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <div class="accordion-header-title">Long-Term Savings & ROI</div>
+                    <div class="accordion-chevron">▸</div>
+                </div>
+                <div class="accordion-content">
+                    <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #22c55e; margin-bottom: 16px;">
+                        <h4 style="font-weight: 700; color: #1f2937; margin-bottom: 12px;">Insurance Premium Reductions</h4>
+                        <p style="color: #374151; font-size: 14px; margin-bottom: 12px;">By completing this plan, you may reduce your annual home insurance premiums:</p>
+                        <ul style="color: #374151; font-size: 14px; margin-left: 20px;">
+                            <li style="margin-bottom: 8px;"><strong>Phase 1 complete:</strong> 5-10% reduction in hazard insurance</li>
+                            <li style="margin-bottom: 8px;"><strong>Phase 1 + 2 complete:</strong> 10-15% reduction (plus potential coverage improvements)</li>
+                            <li><strong>All phases complete:</strong> 15-25% reduction + better availability and terms</li>
+                        </ul>
+                    </div>
+
+                    <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #22c55e; margin-bottom: 16px;">
+                        <h4 style="font-weight: 700; color: #1f2937; margin-bottom: 12px;">Property Value Impact</h4>
+                        <p style="color: #374151; font-size: 14px;">Well-maintained defensible space and fire-hardened homes typically command 2-5% premium in fire-prone areas. At current valuations, this represents $30,000-$75,000 in added value.</p>
+                    </div>
+
+                    <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #22c55e;">
+                        <h4 style="font-weight: 700; color: #1f2937; margin-bottom: 12px;">Risk Reduction</h4>
+                        <p style="color: #374151; font-size: 14px;">Beyond numbers: peace of mind, reduced evacuation risk, and protection of your community's most precious asset — your home and family.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- INSURANCE SECTION -->
+        <section id="insurance" class="mb-20">
+            <h2 class="section-heading">Working With Your Insurer</h2>
+            <p class="section-intro">Your fire safety plan directly aligns with what insurers look for. Here's how each phase strengthens your position.</p>
+
+            <div style="background: white; padding: 24px; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 24px;">
+                <p style="font-size: 14px; color: #6b7280; margin-bottom: 12px;">You're at <strong>2 of 6</strong> commonly evaluated criteria. Our plan brings you to <strong>6 of 6</strong>.</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
+                    <div style="padding: 12px; background: #f9fafb; border-radius: 6px; border-left: 4px solid #fbbf24;">
+                        <div style="font-weight: 600; color: #1f2937; font-size: 14px;">1. Defensible Space (Zone 0)</div>
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">✓ Phase 1</div>
+                    </div>
+                    <div style="padding: 12px; background: #f9fafb; border-radius: 6px; border-left: 4px solid #fbbf24;">
+                        <div style="font-weight: 600; color: #1f2937; font-size: 14px;">2. Home Hardening (Vents/Roof)</div>
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">✓ Phase 1-2</div>
+                    </div>
+                    <div style="padding: 12px; background: #f9fafb; border-radius: 6px; border-left: 4px solid #fbbf24;">
+                        <div style="font-weight: 600; color: #1f2937; font-size: 14px;">3. Vegetation Management (Zone 1)</div>
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">✓ Phase 2</div>
+                    </div>
+                    <div style="padding: 12px; background: #f9fafb; border-radius: 6px; border-left: 4px solid #fbbf24;">
+                        <div style="font-weight: 600; color: #1f2937; font-size: 14px;">4. Access & Clearance</div>
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">✓ Phase 2</div>
+                    </div>
+                    <div style="padding: 12px; background: #f9fafb; border-radius: 6px; border-left: 4px solid #fbbf24;">
+                        <div style="font-weight: 600; color: #1f2937; font-size: 14px;">5. Extended Fuel Reduction (Zone 2)</div>
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">✓ Phase 3</div>
+                    </div>
+                    <div style="padding: 12px; background: #f9fafb; border-radius: 6px; border-left: 4px solid #fbbf24;">
+                        <div style="font-weight: 600; color: #1f2937; font-size: 14px;">6. Third-Party Certification</div>
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">✓ Phase 3</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <div class="accordion-header-title">How This Plan Maps to Insurer Criteria</div>
+                    <div class="accordion-chevron">▸</div>
+                </div>
+                <div class="accordion-content">
+                    <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin-bottom: 16px;">Insurance companies assess risk based on defensible space, structural hardening, and community mitigation. Your plan addresses all six major criteria, systematically improving your insurability and reducing premiums.</p>
+
+                    <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin-bottom: 12px;">
+                        <h4 style="font-weight: 700; color: #1f2937; margin-bottom: 8px;">Criterion 1: Defensible Space (Zone 0)</h4>
+                        <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin-bottom: 8px;"><strong>What insurers want:</strong> Clear 5-foot zone with no dead vegetation, leaves, or debris near foundation and roof.</p>
+                        <p style="color: #374151; font-size: 14px; line-height: 1.6;"><strong>Your plan:</strong> Phase 1 clears gutters, removes all debris, trims trees, and screens vents. This is your fastest, highest-impact upgrade.</p>
+                    </div>
+
+                    <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin-bottom: 12px;">
+                        <h4 style="font-weight: 700; color: #1f2937; margin-bottom: 8px;">Criterion 2: Home Hardening (Roof & Vents)</h4>
+                        <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin-bottom: 8px;"><strong>What insurers want:</strong> Class A fire-rated roof. All vents screened with 1/8-inch metal mesh. No wood siding or vulnerable materials.</p>
+                        <p style="color: #374151; font-size: 14px; line-height: 1.6;"><strong>Your plan:</strong> Phase 1 handles vents; Phase 2 covers roof replacement and exterior upgrades. This stops ember entry completely.</p>
+                    </div>
+
+                    <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin-bottom: 12px;">
+                        <h4 style="font-weight: 700; color: #1f2937; margin-bottom: 8px;">Criterion 3: Vegetation Management (Zone 1)</h4>
+                        <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin-bottom: 8px;"><strong>What insurers want:</strong> Thinned forest. 10-12 foot spacing between tree crowns. No branches within 10 feet of structures.</p>
+                        <p style="color: #374151; font-size: 14px; line-height: 1.6;"><strong>Your plan:</strong> Phase 2 removes dead trees, thins canopy, and prunes lower limbs. Dramatically reduces fuel load between house and wildland.</p>
+                    </div>
+
+                    <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin-bottom: 12px;">
+                        <h4 style="font-weight: 700; color: #1f2937; margin-bottom: 8px;">Criterion 4: Access & Clearance</h4>
+                        <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin-bottom: 8px;"><strong>What insurers want:</strong> Clear 20-foot driveway. 14-foot vertical clearance. Unobstructed house number visibility.</p>
+                        <p style="color: #374151; font-size: 14px; line-height: 1.6;"><strong>Your plan:</strong> Phase 2-3 ensures emergency vehicle access and proper signage. Critical for evacuation and emergency response.</p>
+                    </div>
+
+                    <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin-bottom: 12px;">
+                        <h4 style="font-weight: 700; color: #1f2937; margin-bottom: 8px;">Criterion 5: Extended Fuel Reduction (Zone 2)</h4>
+                        <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin-bottom: 8px;"><strong>What insurers want:</strong> 100+ feet of thinned forest and reduced fuel load. Comprehensive landscape management.</p>
+                        <p style="color: #374151; font-size: 14px; line-height: 1.6;"><strong>Your plan:</strong> Phase 3 extends mitigation across your full property perimeter. Creates a defensible landscape at scale.</p>
+                    </div>
+
+                    <div style="background: #f9fafb; padding: 20px; border-radius: 8px;">
+                        <h4 style="font-weight: 700; color: #1f2937; margin-bottom: 8px;">Criterion 6: Third-Party Certification</h4>
+                        <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin-bottom: 8px;"><strong>What insurers want:</strong> Professional verification that work meets standards. Firewise USA or equivalent certification.</p>
+                        <p style="color: #374151; font-size: 14px; line-height: 1.6;"><strong>Your plan:</strong> Phase 3 includes third-party audit and certification. Provides documentation for insurance company review and premium negotiation.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <div class="accordion-header-title">Next Steps with Your Insurance Company</div>
+                    <div class="accordion-chevron">▸</div>
+                </div>
+                <div class="accordion-content">
+                    <ol style="color: #374151; font-size: 14px; margin-left: 20px; line-height: 1.8;">
+                        <li style="margin-bottom: 12px;"><strong>Share this report:</strong> Forward your Fire Safety Plan to your insurance agent. Many insurers have specific discount programs tied to these improvements.</li>
+                        <li style="margin-bottom: 12px;"><strong>Ask about discounts:</strong> Request quotes for each phase. Some insurers offer discounts upon project completion (not just at renewal).</li>
+                        <li style="margin-bottom: 12px;"><strong>Discuss coverage changes:</strong> As you improve defensible space and hardening, ask about changes to deductibles, coverage limits, or exclusions.</li>
+                        <li style="margin-bottom: 12px;"><strong>Document progress:</strong> Take before/after photos of each phase. Keep contractor invoices and certifications for your insurer's records.</li>
+                        <li style="margin-bottom: 12px;"><strong>Timing for Phase 3:</strong> Once Phase 3 certification is complete, request a full insurance quote review. You're now positioned for the best possible terms.</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- REGULATIONS SECTION -->
+        <section id="regulations" class="mb-20">
+            <h2 class="section-heading">Local Regulations & Compliance</h2>
+            <p class="section-intro">Your plan aligns with Berkeley EMBER requirements, CAL FIRE standards, and Fire Safe guidelines. Here's what applies to your property.</p>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <div class="accordion-header-title">Berkeley EMBER Program Requirements</div>
+                    <div class="accordion-chevron">▸</div>
+                </div>
+                <div class="accordion-content">
+                    <div class="regulation-item">
+                        <div class="regulation-title">Zone 0 Clearance (5-foot defensible space)</div>
+                        <div class="regulation-text">All dead leaves, needles, and debris must be removed from roof, gutters, and ground within 5 feet of all buildings. This is required under Berkeley EMBER guidelines.</div>
+                        <div class="regulation-deadline">Status: Phase 1 addresses this requirement</div>
+                    </div>
+
+                    <div class="regulation-item">
+                        <div class="regulation-title">Vent Screening (1/8-inch mesh)</div>
+                        <div class="regulation-text">All attic, foundation, and dryer vents must be fitted with non-corrodible metal mesh screens (1/8-inch nominal opening). Screening prevents ember entry during wildfire.</div>
+                        <div class="regulation-deadline">Status: Phase 1 addresses this requirement</div>
+                    </div>
+
+                    <div class="regulation-item">
+                        <div class="regulation-title">Roof Condition & Class A Rating</div>
+                        <div class="regulation-text">Roofs must be in good repair with no missing or damaged shingles. Class A fire-rated roofing is highly recommended and may be required for permit work. Metal, tile, or specific fire-rated asphalt products qualify.</div>
+                        <div class="regulation-deadline">Status: Phase 1 (inspection), Phase 2 (replacement if needed)</div>
+                    </div>
+
+                    <div class="regulation-item">
+                        <div class="regulation-title">Tree Trimming (Zone 1)</div>
+                        <div class="regulation-text">Trees within 30 feet of structures must have branches removed that hang over roofs. Lower limbs must be pruned 6-10 feet up. Trees must be spaced 10+ feet apart (crown to crown).</div>
+                        <div class="regulation-deadline">Status: Phase 1 (initial), Phase 2 (comprehensive)</div>
+                    </div>
+
+                    <div class="regulation-item">
+                        <div class="regulation-title">Dead Tree Removal</div>
+                        <div class="regulation-text">Any tree that is dead, dying, or poses a hazard must be removed. This includes trees with no green foliage, significant bark damage, or obvious disease. Not an optional measure — safety critical.</div>
+                        <div class="regulation-deadline">Status: Phase 2 addresses this requirement</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <div class="accordion-header-title">CAL FIRE Defensible Space Standards</div>
+                    <div class="accordion-chevron">▸</div>
+                </div>
+                <div class="accordion-content">
+                    <div class="regulation-item">
+                        <div class="regulation-title">Zone 0 (Immediate — 0 to 5 feet)</div>
+                        <div class="regulation-text">Remove all dead branches, leaves, needles, and debris from roof and ground. Trim branches 6-10 feet up on nearby trees. Remove shrubs within 5 feet of house. No dead plants or plant material.</div>
+                        <div class="regulation-deadline">Status: Phase 1 addresses Zone 0 completely</div>
+                    </div>
+
+                    <div class="regulation-item">
+                        <div class="regulation-title">Zone 1 (Intermediate — 5 to 30 feet)</div>
+                        <div class="regulation-text">Prune tree limbs 6-10 feet up. Remove dead or dying trees. Remove shrubs. Thin trees to 10-12 foot spacing. No ladder fuels (vegetation that allows fire to climb into tree canopies).</div>
+                        <div class="regulation-deadline">Status: Phase 2 addresses Zone 1 comprehensively</div>
+                    </div>
+
+                    <div class="regulation-item">
+                        <div class="regulation-title">Zone 2 (Extended — 30 to 100+ feet)</div>
+                        <div class="regulation-text">Remove dead trees, thin overstocked forest. Maintain 10-12 foot spacing. Remove branches 6-10 feet up. Remove accumulated fuel (chips, needles, fallen branches). This zone extends defensible space and reduces wildland fuels.</div>
+                        <div class="regulation-deadline">Status: Phase 3 addresses Zone 2 and beyond</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <div class="accordion-header-title">Fire-Safe Building Materials (Title 24 / Building Code)</div>
+                    <div class="accordion-chevron">▸</div>
+                </div>
+                <div class="accordion-content">
+                    <div class="regulation-item">
+                        <div class="regulation-title">Class A Roofing Materials</div>
+                        <div class="regulation-text">Only Class A fire-rated materials are permitted. Options include: metal roofing (standing seam or shingles), Class A architectural shingles, concrete tiles, clay tiles, or slate. Wood shingles do NOT meet Class A standard and are prohibited in fire zones.</div>
+                        <div class="regulation-deadline">Status: Phase 2 roof upgrade ensures compliance</div>
+                    </div>
+
+                    <div class="regulation-item">
+                        <div class="regulation-title">Exterior Siding & Trim</div>
+                        <div class="regulation-text">Fiber cement board, stucco, masonry, or metal siding with fire-rated backing are required. Vinyl, untreated wood, and cedar shake are not permitted in high fire-risk areas. Review local Title 24 standards for your specific zone.</div>
+                        <div class="regulation-deadline">Status: Phase 2 includes siding inspection and upgrades</div>
+                    </div>
+
+                    <div class="regulation-item">
+                        <div class="regulation-title">Vent Openings & Screens</div>
+                        <div class="regulation-text">All vents (attic, dryer, foundation) must be fitted with non-corrodible 1/8-inch metal mesh. No solid closures allowed. Screens must be removable for cleaning and inspection.</div>
+                        <div class="regulation-deadline">Status: Phase 1 addresses all vent screening</div>
+                    </div>
+
+                    <div class="regulation-item">
+                        <div class="regulation-title">Windows & Glass</div>
+                        <div class="regulation-text">Dual-pane or tempered windows are highly recommended. All glass penetrations (windows, doors, skylights) should be sealed with fire-rated caulk. This minimizes ember entry through gaps.</div>
+                        <div class="regulation-deadline">Status: Phase 2 includes window sealing and upgrades</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <div class="accordion-header-title">Grizzly Peak Mitigation Area Specifics</div>
+                    <div class="accordion-chevron">▸</div>
+                </div>
+                <div class="accordion-content">
+                    <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin-bottom: 16px;">Your property is located in a High Fire Hazard Severity Zone (FHSZ) within the Grizzly Peak area. This carries specific requirements from the City of Berkeley and State Fire Marshal:</p>
+
+                    <div class="regulation-item">
+                        <div class="regulation-title">Mandatory Defensible Space Inspection</div>
+                        <div class="regulation-text">The City of Berkeley may conduct inspections to verify compliance with EMBER program requirements. Violations may result in notices and fines if not remedied within specified timeframes.</div>
+                        <div class="regulation-deadline">Your plan ensures full compliance and avoids penalties</div>
+                    </div>
+
+                    <div class="regulation-item">
+                        <div class="regulation-title">Permit Requirements for Tree Work</div>
+                        <div class="regulation-text">Tree removal or significant pruning may require City permits. Your contractor will handle permit applications and City coordination as part of Phase 2-3 work.</div>
+                        <div class="regulation-deadline">Contractor coordination included in project scope</div>
+                    </div>
+
+                    <div class="regulation-item">
+                        <div class="regulation-title">Fuel Break Expectations</div>
+                        <div class="regulation-text">Properties in Grizzly Peak are expected to maintain continuous defensible space to the property boundary. This protects not just your home but the entire neighborhood.</div>
+                        <div class="regulation-deadline">Phase 3 extends mitigation to full property edge</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Modal for Phase CTA -->
+    <div id="quoteModal" class="modal" onclick="closePhaseModalOnBackground(event)">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closePhaseModal()">&times;</button>
+
+            <!-- Left Side: Project Summary -->
+            <div class="modal-left">
+                <div class="modal-phase-label">Your Project</div>
+                <div class="modal-phase-name" id="modalPhaseName">Phase 1</div>
+                <div class="modal-phase-cost" id="modalPhaseCost">$2,900</div>
+
+                <div class="modal-section-title">What's Included</div>
+                <ul class="modal-checklist" id="modalChecklist">
+                    <li>Clear roof gutters and remove all dead leaves/needles</li>
+                    <li>Trim tree canopies and remove overhanging branches</li>
+                    <li>Install 1/8-inch metal mesh on all vents</li>
+                </ul>
+
+                <div class="modal-section-title">Timeline</div>
+                <div class="modal-timeline" id="modalTimeline">2-3 weeks</div>
+
+                <div class="modal-callout">
+                    <strong>What you'll get:</strong> A detailed project proposal from 2-3 vetted local contractors within 48 hours.
+                </div>
+
+                <div class="modal-contractors">
+                    <div class="modal-contractors-text">Your request will be sent to vetted local specialists including:</div>
+                    <div class="modal-contractors-list">
+                        <div class="modal-contractor-badge">BayArea Fire Mitigation</div>
+                        <div class="modal-contractor-badge">FireSafe Landscapes</div>
+                        <div class="modal-contractor-badge">Grizzly Peak Services</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Quote Form -->
+            <div class="modal-right">
+                <div class="modal-title">Request Quotes</div>
+
+                <div class="modal-form-group">
+                    <label class="modal-label">Name</label>
+                    <input type="text" id="formName" class="modal-input" placeholder="Your name">
+                </div>
+
+                <div class="modal-form-group">
+                    <label class="modal-label">Email</label>
+                    <input type="email" id="formEmail" class="modal-input" placeholder="your@email.com">
+                </div>
+
+                <div class="modal-form-group">
+                    <label class="modal-label">Phone</label>
+                    <input type="tel" id="formPhone" class="modal-input" placeholder="(555) 123-4567">
+                </div>
+
+                <div class="modal-form-group">
+                    <label class="modal-label">Property Address</label>
+                    <input type="text" class="modal-input" value="1847 Grizzly Peak Blvd, Berkeley" disabled style="background: #f9fafb; color: #6b7280;">
+                </div>
+
+                <div class="modal-form-group">
+                    <label class="modal-label">Selected Phase</label>
+                    <input type="text" id="formPhase" class="modal-input" value="Phase 1" disabled style="background: #f9fafb; color: #6b7280;">
+                </div>
+
+                <div class="modal-form-group">
+                    <label class="modal-label">Preferred Start Date</label>
+                    <select id="formStartDate" class="modal-select">
+                        <option value="ASAP">ASAP</option>
+                        <option value="1-month">Within 1 month</option>
+                        <option value="3-months">Within 3 months</option>
+                        <option value="flexible">Flexible</option>
+                    </select>
+                </div>
+
+                <div class="modal-form-group">
+                    <label class="modal-label">Additional Notes (Optional)</label>
+                    <textarea id="formMessage" class="modal-textarea" rows="4" placeholder="Any specific concerns or preferences?"></textarea>
+                </div>
+
+                <button class="modal-button" onclick="submitQuoteForm()">Request Quotes</button>
+                <p style="font-size: 12px; color: #6b7280; text-align: center; margin-top: 16px;">We'll connect you with local contractors within 48 hours.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleAccordion(header) {
+            const item = header.closest('.accordion-item');
+            item.classList.toggle('open');
+        }
+
+        function switchPhase(phaseId) {
+            document.querySelectorAll('.phase-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.phase-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(phaseId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function openPhaseModal(phaseName, phaseCost, checklistItems, timeline) {
+            document.getElementById('modalPhaseName').textContent = phaseName;
+            document.getElementById('modalPhaseCost').textContent = phaseCost;
+            document.getElementById('modalTimeline').textContent = timeline;
+            document.getElementById('formPhase').value = phaseName;
+            const checklistHtml = checklistItems.map(item => `<li>${item}</li>`).join('');
+            document.getElementById('modalChecklist').innerHTML = checklistHtml;
+            document.getElementById('quoteModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePhaseModal() {
+            document.getElementById('quoteModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            document.getElementById('formName').value = '';
+            document.getElementById('formEmail').value = '';
+            document.getElementById('formPhone').value = '';
+            document.getElementById('formMessage').value = '';
+            document.getElementById('formStartDate').value = 'ASAP';
+        }
+
+        function closePhaseModalOnBackground(event) {
+            if (event.target.id === 'quoteModal') {
+                closePhaseModal();
+            }
+        }
+
+        function submitQuoteForm() {
+            const name = document.getElementById('formName').value;
+            const email = document.getElementById('formEmail').value;
+            const phone = document.getElementById('formPhone').value;
+            const phase = document.getElementById('formPhase').value;
+            const startDate = document.getElementById('formStartDate').value;
+            const message = document.getElementById('formMessage').value;
+
+            if (!name || !email || !phone) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            console.log({
+                name, email, phone, phase, startDate, message,
+                address: '1847 Grizzly Peak Blvd, Berkeley'
+            });
+
+            alert(`Thanks, ${name}! We'll send quotes from local contractors within 48 hours.`);
+            closePhaseModal();
+        }
+
+        document.querySelectorAll('.accordion-item').forEach(item => {
+            item.classList.remove('open');
+        });
+    </script>
+</body>
+</html>
